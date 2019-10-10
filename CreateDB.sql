@@ -34,7 +34,7 @@ create table players
      Salary			int check (Salary >= 0),
      primary key (PlayerID),
      foreign key (TeamID) references teams(TeamID)
-		on delete cascade
+		on delete null
 	);
      
      
@@ -64,8 +64,8 @@ create table play
      GameID		int,
      primary key (PlayerID, GameID),
      foreign key (PlayerID) references players(PlayerID)
-		on delete cascade,
+		on delete null,
 	 foreign key (GameID) references games(GameID)
-		on delete cascade
+		on delete null
 	);
      
