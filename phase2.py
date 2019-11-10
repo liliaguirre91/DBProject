@@ -39,10 +39,23 @@ class App(object):
         self.enterFile_button.configure( command=self.getQuery)
         self.enterFile_button.grid(row=self.current_row,column=0,columnspan=2)
         self.current_row += 1
+ 
+        #delete
+        self.inputLabel = Label(window, text='Enter the name of the table that will be deleted')
+        self.inputLabel.grid(row=self.current_row, column=0)
+        self.userInput_text = StringVar()
+        self.userInput = Entry(window, textvariable=self.userInput_text)
+        self.userInput.grid(row=self.current_row, column=1)
+        #self.current_row += 1
+
+        self.enterFile_button = Button (window, text="Delete table")
+        self.enterFile_button.configure( command=self.getQuery)
+        self.enterFile_button.grid   (row=self.current_row,column=15,columnspan=2)
+        self.current_row += 1
 
     def getQuery(self):
         inputFile = self.userInput_text.get()
-        con = MySQL.connect('localhost', 'root', '05deMayo!!', 'OffensiveNFLPlayers')
+        con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
 
         with con:
             cur = con.cursor()
