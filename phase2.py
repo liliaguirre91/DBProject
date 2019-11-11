@@ -26,19 +26,45 @@ class App(object):
         
     def formatWindow(self, window):
         self.current_row = 0
-        
-        self.inputLabel = Label(window, text='Please enter an Input file with insertion data')
+        self.insertionSection(window)
+        self.querySection(window)
+    
+    def insertionSection(self, window):
+        top_frame = Frame(window)
+        heading = Label(window,text='INSERTIONS', fg="white", bg="blue").grid(row=self.current_row, column=0)
+        self.current_row += 1
+        self.inputLabel = Label(window, text='Please enter an Input file with insertion data and select the insert type:')
         self.inputLabel.grid(row=self.current_row, column=0)
+        self.current_row += 1
         self.userInput_text = StringVar()
         self.userInput = Entry(window, textvariable=self.userInput_text)
-        self.userInput.grid(row=self.current_row, column=1)
+        self.userInput.grid(row=self.current_row, column=0)
         self.current_row += 1
         
         #inputFile = self.userInput_text.get()
-        self.enterFile_button = Button (window, text="Enter file")
-        self.enterFile_button.configure( command=self.getQuery)
-        self.enterFile_button.grid(row=self.current_row,column=0,columnspan=2)
+        self.singleInsert = Button (top_frame, text="Single Line Insert")
+        self.singleInsert.grid(row=self.current_row,column=0, columnspan=1)
+        self.multipleInsert = Button (top_frame, text="Multile Line Insert")
+        self.multipleInsert.grid(row=self.current_row,column=1)
+        self.loadInsert = Button (top_frame, text="Load Data Insert")
+        self.loadInsert.grid(row=self.current_row,column=2)
+
+        #self.enterFile_button.grid(row=self.current_row,column=0,columnspan=2)
+        #self.current_row += 1
+        
+    def querySection(self, window):
+        bottom_frame = Frame(window)
+        heading = Label(window,text='QUERY').grid(row=self.current_row, column=0)
         self.current_row += 1
+        self.inputLabel = Label(window, text='Please enter the table name you would like to query:')
+        self.inputLabel.grid(row=self.current_row, column=0)
+        self.current_row += 1
+        self.userInput_text = StringVar()
+        self.userInput = Entry(window, textvariable=self.userInput_text)
+        self.userInput.grid(row=self.current_row, column=0)
+        self.current_row += 1
+        
+        self.queryButton = Button (bottom_frame, text="Query Database").place(x=245, y=250)
 
     def getQuery(self):
         inputFile = self.userInput_text.get()
@@ -49,7 +75,7 @@ class App(object):
             cur.execute(inputFile)
             
             rows = cur.fetchall()
-            print (rows)
+            print (rows) 
                 
         print(inputFile)
 

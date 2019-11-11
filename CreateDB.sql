@@ -34,7 +34,7 @@ create table players
      Salary			int check (Salary >= 0),
      primary key (PlayerID),
      foreign key (TeamID) references teams(TeamID)
-		on delete null
+		on delete set null
 	);
      
      
@@ -49,7 +49,7 @@ create table games
      Date			date,
      Stadium		varchar(32) not null,
      Result			char(1) not null check (Result in ('W', 'L', 'T')),
-     Attendance 	int,
+     Attendance 	int check (Attendance >=0),
      TicketRevenue	int check (TicketRevenue >= 0),
      primary key (GameID)
 	);
@@ -64,8 +64,8 @@ create table play
      GameID		int,
      primary key (PlayerID, GameID),
      foreign key (PlayerID) references players(PlayerID)
-		on delete null,
+		on delete cascade,
 	 foreign key (GameID) references games(GameID)
-		on delete null
+		on delete cascade
 	);
      
