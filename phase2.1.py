@@ -77,11 +77,45 @@ def getQuery():
                 for row in rows:    
                     output = output + ("{0:>0} {1:>10}".format(row[0], row[1])) + "\n"
        
-            
     queryTextbox.insert(END, output)
- 
- 
- 
+ #---------------------------------end getQuery()---------------------------
+def getAverage():
+    tableName     = findAvgTableInput_text.get()
+    attributeName = attributeInput_text.get()
+    averageQuery  = ''
+    output        = ''
+    
+    if (tableName.lower() != "players" and tableName.lower() != "games"):
+        tk.messagebox.showinfo("Table Alert", "Please enter a valid table:\n players or games")
+        
+    else:
+        if(tableName.lower() == 'players'):
+            #-----------------------------player attributes-------------------------------
+            if (attributeName.lower() != 'touchdowns' and attributeName.lower() != 'totalyards' and attributeName.lower() != 'salary'):
+                tk.messagebox.showinfo("Attribute Alert", "Please enter a valid attribute from the Players table:\n touchdowns, totalyards, salary")
+            else:
+                averageQuery = "SELECT avg(" + attributeName + ") as " + attributeName + " FROM " + tableName + ";"
+                    #------------------------------games attribute-------------------------------------          
+        if(tableName.lower() == 'games'):
+            if (attributeName.lower() != 'attendance' and attributeName.lower() != 'ticketrevenue'):
+                tk.messagebox.showinfo("Attribute Alert","Please enter a valid attribute from the Games table:\n attendance, ticketrevenue")
+            else:
+                averageQuery = "SELECT avg(" + attributeName + ") as " + attributeName + " FROM " + tableName + ";"
+            
+        con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
+        with con:
+            cur = con.cursor()
+            cur.execute(averageQuery)
+            rows = cur.fetchall()
+            desc = cur.description
+            
+            #output = attributeName
+            output = ("{0:>0}".format(desc[0][0])) + "\n"
+            for row in rows:    
+                output = output + str(row[0])
+    #print(output)
+    avgTextbox.insert(END, output )
+#------------------end getAverage()----------------------     
 window = tk.Tk()
 #start = App(window)
 window.wm_title("Database Phase 2 GUI")
@@ -118,13 +152,13 @@ queryInput_text = StringVar()
 queryInput = Entry(window, textvariable=queryInput_text).pack()
 queryButton = Button (window, text="Query Database", highlightcolor="green", highlightthickness=4, command=getQuery).pack()
 #print(output)
-queryTextbox = Text(window, height=25, width=100, relief= "ridge", borderwidth= 6)
+queryTextbox = Text(window, height=5, width=100, relief= "ridge", borderwidth= 6)
 queryTextbox.pack()
 
 
 #---------------------------------------------------------------------------------------------
 
-        #delete
+#delete
 deleteHeading = Label(window,text='DELETIONS', fg="white", bg="gray").pack(pady=20, fill="x")
 deleteLabel = Label(window, text='Enter the name of the table that will be deleted').pack()
 deleteInput_text = StringVar()
@@ -132,6 +166,23 @@ deleteInput = Entry(window, textvariable=deleteInput_text).pack()
 
 delete_button = Button (window, text="Delete table").pack()
 
+
+ #---------------------------------------------------------------------------------------------
+findAvgHeading = Label (window, text = 'FIND AVERAGE', fg = 'white', bg = 'gray').pack(pady = 10, fill = 'x')
+findAvgLabel = Label(window, text='Enter the table and attribute you would like to access').pack()
+
+findAvgTableLabel = Label(window, text = 'Table:     ').pack()
+findAvgTableInput_text = StringVar()
+findAvgTableInput      = Entry(window, textvariable = findAvgTableInput_text).pack()
+
+attributeLabel = Label(window, text = 'Attribute:').pack()
+attributeInput_text = StringVar()
+attributeInput = Entry(window, textvariable = attributeInput_text).pack()
+
+average_button = Button (window, text="Find Average", highlightcolor = 'green', highlightthickness = 4, command = getAverage).pack()
+
+avgTextbox = Text(window, height=2, width=100, relief= "ridge", borderwidth= 6)
+avgTextbox.pack()
 
 window.mainloop()
 
@@ -141,6 +192,33 @@ window.mainloop()
 #---------------------------------------------------------------------------------------------
 # Define an main function to create GUI and send it to App class
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
