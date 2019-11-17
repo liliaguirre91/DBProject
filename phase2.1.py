@@ -77,20 +77,57 @@ def getQuery():
             output += "\n"
             queryTextbox.insert(0.0, output)
             
-   # queryTextbox.insert(END, output)
- 
+ #---------------------------------end getQuery()---------------------------
+
 def onFrameConfig (canvas):
     canvas.configure(scrollregion=canvas.bbox("all"))
  
+
+def getAverage():
+    tableName     = findAvgTableInput_text.get()
+    attributeName = attributeInput_text.get()
+    averageQuery  = ''
+    output        = ''
+    
+    if (tableName.lower() != "players" and tableName.lower() != "games"):
+        tk.messagebox.showinfo("Table Alert", "Please enter a valid table:\n players or games")
+        
+    else:
+        if(tableName.lower() == 'players'):
+            #-----------------------------player attributes-------------------------------
+            if (attributeName.lower() != 'touchdowns' and attributeName.lower() != 'totalyards' and attributeName.lower() != 'salary'):
+                tk.messagebox.showinfo("Attribute Alert", "Please enter a valid attribute from the Players table:\n touchdowns, totalyards, salary")
+            else:
+                averageQuery = "SELECT avg(" + attributeName + ") as " + attributeName + " FROM " + tableName + ";"
+                    #------------------------------games attribute-------------------------------------          
+        if(tableName.lower() == 'games'):
+            if (attributeName.lower() != 'attendance' and attributeName.lower() != 'ticketrevenue'):
+                tk.messagebox.showinfo("Attribute Alert","Please enter a valid attribute from the Games table:\n attendance, ticketrevenue")
+            else:
+                averageQuery = "SELECT avg(" + attributeName + ") as " + attributeName + " FROM " + tableName + ";"
+            
+        cur = connectToDB()
+        cur.execute(averageQuery)
+        rows = cur.fetchall()
+        desc = cur.description
+            
+        output = "The average number of "
+        output = ("{0:>0}".format(desc[0][0])) + " in the " + tableName + " table is:\n"
+        for row in rows:
+            output = output + str(row[0])
+    output += "\n"
+    avgTextbox.insert(0.0, output )
+#----------------------------------------end getAverage()---------------------------------------------------------
+
 window = tk.Tk()
 #start = App(window)
 window.wm_title("Database Phase 2 GUI")
-window.geometry('750x1000')
+window.geometry('750x800')
 
 
-#---------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------------------
 #scrollbar = Scrollbar(window).pack( side = "right", fill = "y" )
-current_row = 0
+#current_row = 0
 #self.insertionSection(window)
 #self.deleteSection(window)
 #self.querySection(window)
@@ -100,47 +137,54 @@ current_row = 0
 canvas = Canvas(window, borderwidth=0)
 top_frame = Frame(canvas)
 windowScrollbar = Scrollbar(window, orient="vertical", command=canvas.yview)
-canvas.configure(width=2000, height=1000, yscrollcommand=windowScrollbar.set)
+canvas.configure(width=2000, height=800, yscrollcommand=windowScrollbar.set)
 windowScrollbar.pack( side = "right", fill = "y" )
 canvas.pack(expand="yes")
 canvas.create_window((10, 10), window=top_frame, anchor="nw")
 top_frame.bind("<Configure>", lambda event, canvas=canvas:onFrameConfig(canvas))
 #top_frame.pack(expand="yes")
 
+#--------------------------------------------------------------------------------------------------------
 insertHeading = Label(top_frame,text='INSERTIONS', fg="white", bg="gray").pack(pady=20, fill="x")#grid(row=self.current_row, column=0, rowspan="5")
-
 insertLabel = Label(top_frame, text='Please enter an Input file with insertion data and select the insert type:').pack()
-
 insertInput_text = StringVar()
 insertInput = Entry(top_frame, textvariable=insertInput_text).pack()
-        
 singleInsert = Button (top_frame, text="Single Line Insert").pack()
 multipleInsert = Button (top_frame, text="Multile Line Insert").pack()
 loadInsert = Button (top_frame, text="Load Data Insert").pack()
 
      
 #---------------------------------------------------------------------------------------------
-
 queryHeading = Label(top_frame,text='QUERY', fg="white", bg="gray").pack(pady=20, fill="x")
 queryLabel = Label(top_frame, text='Please enter the name of the table you would like to query:').pack()
 queryInput_text = StringVar()
 queryInput = Entry(top_frame, textvariable=queryInput_text).pack()
 queryButton = Button (top_frame, text="Query Database", highlightcolor="green", highlightthickness=4, command=getQuery).pack()
-#print(output)
 queryTextbox = Text(top_frame, height=25, width=100, relief= "ridge", borderwidth= 6)
 queryTextbox.pack()
 
 
 #---------------------------------------------------------------------------------------------
-
         #delete
 deleteHeading = Label(top_frame,text='DELETIONS', fg="white", bg="gray").pack(pady=20, fill="x")
 deleteLabel = Label(top_frame, text='Enter the name of the table that will be deleted').pack()
 deleteInput_text = StringVar()
 deleteInput = Entry(top_frame, textvariable=deleteInput_text).pack()
-
 delete_button = Button (top_frame, text="Delete table").pack()
 
+
+ #---------------------------------------------------------------------------------------------
+findAvgHeading = Label (top_frame, text = 'FIND AVERAGE', fg='white', bg='gray').pack(pady=10, fill='x')
+findAvgLabel = Label(top_frame, text='Enter the table and attribute you would like to access').pack()
+findAvgTableLabel = Label(top_frame, text = 'Table:     ').pack()
+findAvgTableInput_text = StringVar()
+findAvgTableInput = Entry(top_frame, textvariable = findAvgTableInput_text).pack()
+attributeLabel = Label(top_frame, text = 'Attribute:').pack()
+attributeInput_text = StringVar()
+attributeInput = Entry(top_frame, textvariable = attributeInput_text).pack()
+average_button = Button (top_frame, text="Find Average", highlightcolor='green', highlightthickness=4, command=getAverage).pack()
+avgTextbox = Text(top_frame, height=2, width=40, relief= "ridge", borderwidth= 6)
+avgTextbox.pack()
 
 window.mainloop()
 
@@ -150,6 +194,33 @@ window.mainloop()
 #---------------------------------------------------------------------------------------------
 # Define an main function to create GUI and send it to App class
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
