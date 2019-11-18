@@ -27,8 +27,9 @@ import os
        
         #self.formatWindow(window)
 def connectToDB():
-    con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers')
+    #con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers')
     #con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
+    con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
     with con:
         cur = con.cursor()
     return cur
@@ -119,6 +120,19 @@ def getAverage():
     avgTextbox.insert(0.0, output )
 #----------------------------------------end getAverage()---------------------------------------------------------
 
+#----------------------------------------start deletion()----------------------------------------------------------
+def deleteTable():
+    tablen = deleteInput_text.get()
+    if (tablen.lower() != "players" and tablen.lower() != "games" and tablen.lower() != "teams" and  tablen.lower() != "play"):
+        tk.messagebox.showinfo("Alert Message", "Please enter a valid table: players, games, teams, or play")
+    else:
+        query = "TRUNCATE TABLE " + tablen + ";"    
+        #table = tableName
+        cur = connectToDB()
+        cur.execute(query)
+    tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
+#---------------------------------------end deletion()-------------------------------------------------------------
+
 window = tk.Tk()
 #start = App(window)
 window.wm_title("Database Phase 2 GUI")
@@ -170,7 +184,7 @@ deleteHeading = Label(top_frame,text='DELETIONS', fg="white", bg="gray").pack(pa
 deleteLabel = Label(top_frame, text='Enter the name of the table that will be deleted').pack()
 deleteInput_text = StringVar()
 deleteInput = Entry(top_frame, textvariable=deleteInput_text).pack()
-delete_button = Button (top_frame, text="Delete table").pack()
+delete_button = Button (top_frame, text="Delete table", command = deleteTable).pack()
 
 
  #---------------------------------------------------------------------------------------------
