@@ -24,7 +24,7 @@ import os
 def connectToDB():
 
     try:
-        con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers')
+        con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers', local_infile=1)
         #con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
         #con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
 
@@ -33,6 +33,49 @@ def connectToDB():
     except Exception as e:
          tk.messagebox.showinfo("Alert Message", "Could not connect to database:\n" + str(e))
 
+def loadDataInsert():
+    success = True
+    (cur, conn) = connectToDB()
+    
+    filename = insertInput_text.get()
+    if "players" in filename.lower():
+        tableName = "players"
+        flag = True
+    elif "games" in filename.lower():
+        tableName = "games"
+        flag = True
+    elif "play" in filename.lower():
+        tableName = "play"
+        flag = True
+    elif "teams" in filename.lower():
+        tableName = "teams"
+        flag = True
+    else:
+        tk.messagebox.showinfo("Alert Message", "Please enter a valid table:\n players, games, teams, or play!")
+        flag = False
+    
+    if flag == True:
+        cur.execute("SET SQL_SAFE_UPDATES = 0;")
+        cur.execute("DELETE from " + tableName + ";")
+        cur.execute("SET SQL_SAFE_UPDATES = 1;")
+        try:
+            starttime = time.time()
+            command = "LOAD DATA INFILE " + filename + " INTO TABLE OffensiveNFLPlayers." + tableName + ";"
+        except Exception as e:
+            tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
+            cur.execute("SET SQL_SAFE_UPDATES = 0;")
+            cur.execute("DELETE from Players;")
+            cur.execute("SET SQL_SAFE_UPDATES = 1;")
+            success = False
+    cur.close()
+    conn.commit()
+    conn.close()
+    endtime = time.time()
+    if success:
+        print ('Insert data successful!')
+        result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
+        tk.messagebox.showinfo(title='Result', message=result)
+        
 #-------------------------------------------------------------------------------------------------------------------
 def singleInsert():
     #delete all entries in players first
@@ -55,6 +98,7 @@ def singleInsert():
     else:
         tk.messagebox.showinfo("Alert Message", "Please enter a valid table:\n players, games, teams, or play!")
         flag = False
+        
     if flag == True:
         cur.execute("SET SQL_SAFE_UPDATES = 0;")
         cur.execute("DELETE from " + tableName + ";")
@@ -94,14 +138,6 @@ def singleInsert():
         #else:
          #   tk.messagebox.showinfo("Alert Message", "Please enter a valid file that contains a table name!")
 
-        
-        """ line = line.strip('\n')
-            line = line.split(",")
-            command = ""
-            cur.execute("insert into Players values(%s,%s,%s,%s,%s,%s,%s)",
-                        [line[0], line[1], line[2], line[3], line[4], line[5], line[6]])
-        else:
-            break"""
     f.close()
     cur.close()
     conn.commit()
@@ -210,7 +246,7 @@ def deleteTable():
     if (tablen.lower() != "players" and tablen.lower() != "games" and tablen.lower() != "teams" and  tablen.lower() != "play"):
         tk.messagebox.showinfo("Alert Message", "Please enter a valid table: players, games, teams, or play")
     else:
-        query = "DELETE FROM " + tablen + ";"    
+        query = "DELETE FROM " + tablen + ";"
         #table = tableName
         (cur, conn) = connectToDB()
         cur.execute("SET SQL_SAFE_UPDATES = 0;")
@@ -256,7 +292,7 @@ insertInput_text = StringVar()
 insertInput = Entry(top_frame, textvariable=insertInput_text).pack()
 singleInsert = Button (top_frame, text="Single Line Insert", command=singleInsert).pack()
 multipleInsert = Button (top_frame, text="Multile Line Insert").pack()
-loadInsert = Button (top_frame, text="Load Data Insert").pack()
+loadInsert = Button (top_frame, text="Load Data Insert", command=loadDataInsert).pack()
 
      
 #---------------------------------------------------------------------------------------------

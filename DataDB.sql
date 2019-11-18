@@ -51,6 +51,9 @@ DELETE FROM players;
 SET SQL_SAFE_UPDATES = 1;
 select * from players;
 
+SET SQL_SAFE_UPDATES = 0;
+LOAD DATA INFILE '10_Players.txt' INTO TABLE players;
+SET SQL_SAFE_UPDATES = 1;
 
 INSERT INTO games VALUES (101105, '2019-10-04', 'Soldier Field', 'W', 50000, 5050000);
 INSERT INTO games VALUES (101124, '2019-11-01', 'Oakland-Alameda County Coliseum', 'L', 56000, 4536000);

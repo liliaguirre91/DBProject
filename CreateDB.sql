@@ -45,6 +45,7 @@ create table players
    - The result will always be always be one of the following values: 'W', 'L', or 'T'.
    - TicketRevenue must always be greater than 0.
 */
+drop table games;
 create table games
 	(GameID			int,
      Date			date,
