@@ -22,9 +22,12 @@ import os
        
         #self.formatWindow(window)
 def connectToDB():
+
     try:
         con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers')
         #con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
+        #con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
+
         cur = con.cursor()
         return (cur, con)
     except Exception as e:
@@ -196,8 +199,23 @@ def getAverage():
     conn.close()
 #----------------------------------------end getAverage()---------------------------------------------------------
 
+#<<<<<<< HEAD
 def onFrameConfig (canvas):
     canvas.configure(scrollregion=canvas.bbox("all"))
+#=======
+#----------------------------------------start deletion()----------------------------------------------------------
+def deleteTable():
+    tablen = deleteInput_text.get()
+    if (tablen.lower() != "players" and tablen.lower() != "games" and tablen.lower() != "teams" and  tablen.lower() != "play"):
+        tk.messagebox.showinfo("Alert Message", "Please enter a valid table: players, games, teams, or play")
+    else:
+        query = "TRUNCATE TABLE " + tablen + ";"    
+        #table = tableName
+        cur = connectToDB()
+        cur.execute(query)
+    tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
+#---------------------------------------end deletion()-------------------------------------------------------------
+#>>>>>>> e5e7583d82c768a8beff5918b3e6884e91aa83eb
 
 window = tk.Tk()
 #start = App(window)
@@ -254,7 +272,7 @@ deleteHeading = Label(top_frame,text='DELETIONS', fg="white", bg="gray").pack(pa
 deleteLabel = Label(top_frame, text='Enter the name of the table that will be deleted').pack()
 deleteInput_text = StringVar()
 deleteInput = Entry(top_frame, textvariable=deleteInput_text).pack()
-delete_button = Button (top_frame, text="Delete table").pack()
+delete_button = Button (top_frame, text="Delete table", command = deleteTable).pack()
 
 
  #---------------------------------------------------------------------------------------------
@@ -276,7 +294,7 @@ window.mainloop()
 
             #print(query)
 #---------------------------------------------------------------------------------------------
-# Define an main function to create GUI and send it to App class
+
     
 
 
