@@ -1,0 +1,10 @@
+00000001,Cardinals,Arizona
+00000002,Falcons,Atlanta
+00000003,Ravens,Baltimore
+00000004,Bills,Buffalo
+00000005,Panthers,Carolina
+00000006,Bears,Chicago
+00000007,Bengals,Cincinnati
+00000008,Browns,Cleveland
+00000009,Cowboys,Dallas
+00000010,Broncos,Denver

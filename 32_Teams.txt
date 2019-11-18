@@ -1,0 +1,32 @@
+00000001,Cardinals,Arizona
+00000002,Falcons,Atlanta
+00000003,Ravens,Baltimore
+00000004,Bills,Buffalo
+00000005,Panthers,Carolina
+00000006,Bears,Chicago
+00000007,Bengals,Cincinnati
+00000008,Browns,Cleveland
+00000009,Cowboys,Dallas
+00000010,Broncos,Denver
+00000011,Lions,Detroit
+00000012,Packers,Green Bay
+00000013,Texans,Houston
+00000014,Colts,Indianapolis
+00000015,Jaguars,Jaksonville
+00000016,Chiefs,Kansas City
+00000017,Chargers,Los Angeles
+00000018,Rams,Los Angeles
+00000019,Dolphins,Miami
+00000020,Vikings,Minnesota
+00000021,Patriots,New England
+00000022,Saints,New Orleans
+00000023,Giats,New York
+00000024,Jets,New York
+00000025,Raiders,Oakland
+00000026,Eagles,Philadelphia
+00000027,Steelers,Pittsburgh
+00000028,49ers,San Francisco
+00000029,Seahawks,Seattle
+00000030,Buccaneers,Tampa Bay
+00000031,Titans,Tennessee
+00000032,Redskins,Washington

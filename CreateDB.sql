@@ -23,6 +23,7 @@ create table teams
 	- A player may not have a negative number of touchdowns, but they may have a negative number of yards.
 	- Salary for a player may not be less than 0.
 */
+drop table players;
 create table players
 	(PlayerID		int,
      FirstName		varchar(32) not null,
@@ -47,7 +48,7 @@ create table players
 create table games
 	(GameID			int,
      Date			date,
-     Stadium		varchar(32) not null,
+     Stadium		varchar(40) not null,
      Result			char(1) not null check (Result in ('W', 'L', 'T')),
      Attendance 	int check (Attendance >=0),
      TicketRevenue	int check (TicketRevenue >= 0),
@@ -59,6 +60,7 @@ create table games
      tables. Therefore, they will be foreign keys referenceing these two table respectively.
      Also, the primary key for this table must be the combination of PlayerID and GameID.
 */
+drop table play;
 create table play
 	(PlayerID	int,
      GameID		int,
