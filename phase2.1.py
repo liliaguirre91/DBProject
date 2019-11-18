@@ -105,6 +105,7 @@ def singleInsert():
     f.close()
     cur.close()
     conn.commit()
+    conn.close()
     endtime = time.time()
     if success:
         print ('Insert data successful!')
@@ -133,9 +134,9 @@ def getQuery():
                 
         elif (tableName.lower() == "games"):
             #print ("\n   Game ID\t|\tDate\t|\tStadium\t|\tResult\t|\tAttendance\t|\tTicket revenue")
-            output = ("{0:>0} {1:>10} {2:>25} {3:>14} {4:>15} {5:>15}".format(desc[0][0], desc[1][0], desc[2][0], desc[3][0], desc[4][0], desc[5][0])) + "\n" #6 attributes
+            output = ("{0:>0} {1:>10} {2:>30} {3:>16} {4:>15} {5:>15}".format(desc[0][0], desc[1][0], desc[2][0], desc[3][0], desc[4][0], desc[5][0])) + "\n" #6 attributes
             for row in rows:
-                output += ("{0:>4} {1:>15} {2:>25} {3:>9} {4:>15} {5:>15}".format(row[0], str(row[1]), row[2], row [3], row[4], row[5])) + "\n"
+                output += ("{0:>4} {1:>15} {2:>30} {3:>9} {4:>15} {5:>15}".format(row[0], str(row[1]), row[2], row [3], row[4], row[5])) + "\n"
             output += "\n"
             queryTextbox.insert(0.0, output)
                 
@@ -209,10 +210,15 @@ def deleteTable():
     if (tablen.lower() != "players" and tablen.lower() != "games" and tablen.lower() != "teams" and  tablen.lower() != "play"):
         tk.messagebox.showinfo("Alert Message", "Please enter a valid table: players, games, teams, or play")
     else:
-        query = "TRUNCATE TABLE " + tablen + ";"    
+        query = "DELETE FROM " + tablen + ";"    
         #table = tableName
-        cur = connectToDB()
+        (cur, conn) = connectToDB()
+        cur.execute("SET SQL_SAFE_UPDATES = 0;")
         cur.execute(query)
+        cur.execute("SET SQL_SAFE_UPDATES = 1;")
+        cur.close()
+        conn.commit()
+        conn.close()
     tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
 #---------------------------------------end deletion()-------------------------------------------------------------
 #>>>>>>> e5e7583d82c768a8beff5918b3e6884e91aa83eb
