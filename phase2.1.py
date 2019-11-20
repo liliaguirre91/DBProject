@@ -60,7 +60,13 @@ def loadDataInsert():
         cur.execute("SET SQL_SAFE_UPDATES = 1;")
         try:
             starttime = time.time()
-            command = "LOAD DATA INFILE " + filename + " INTO TABLE OffensiveNFLPlayers." + tableName + ";"
+            
+            filename = "/tmp/" + filename
+            print (filename)
+            #command = "LOAD DATA INFILE '" + filename + "' INTO TABLE " + tableName + " fields terminated BY ',' lines terminated BY '\n';"
+            command = "LOAD DATA LOCAL INFILE '" + filename + "' INTO TABLE " + tableName + " fields terminated BY ',' lines terminated BY '\n';"
+            print (command)
+            cur.execute(command)
         except Exception as e:
             tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
             cur.execute("SET SQL_SAFE_UPDATES = 0;")
@@ -262,7 +268,7 @@ def deleteTable():
 window = tk.Tk()
 #start = App(window)
 window.wm_title("Database Phase 2 GUI")
-window.geometry('750x700')
+window.geometry('770x700')
 
 
 #-------------------------------------------------------------------------------------------------------------------
@@ -277,7 +283,7 @@ window.geometry('750x700')
 canvas = Canvas(window, borderwidth=10)
 
 windowScrollbar = Scrollbar(window, orient="vertical", command=canvas.yview)
-canvas.configure(width=2000, height=800, yscrollcommand=windowScrollbar.set)
+canvas.configure(width=2000, height=650, yscrollcommand=windowScrollbar.set)
 windowScrollbar.pack( side = "right", fill = "y" )
 canvas.pack(expand="yes")
 top_frame = Frame(canvas)

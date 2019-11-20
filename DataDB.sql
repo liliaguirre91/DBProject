@@ -52,8 +52,12 @@ SET SQL_SAFE_UPDATES = 1;
 select * from players;
 
 SET SQL_SAFE_UPDATES = 0;
-LOAD DATA INFILE '10_Players.txt' INTO TABLE players;
+LOAD DATA local INFILE '10_Players.txt' INTO TABLE players fields terminated BY ',' lines terminated BY '\n';
 SET SQL_SAFE_UPDATES = 1;
+select * from players;
+SHOW GLOBAL VARIABLES LIKE 'local_infile';
+SHOW VARIABLES LIKE 'secure_file_priv';
+SET GLOBAL local_infile = 1;
 
 INSERT INTO games VALUES (101105, '2019-10-04', 'Soldier Field', 'W', 50000, 5050000);
 INSERT INTO games VALUES (101124, '2019-11-01', 'Oakland-Alameda County Coliseum', 'L', 56000, 4536000);
