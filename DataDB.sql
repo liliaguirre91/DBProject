@@ -38,13 +38,13 @@ select * from teams;
 
 
 
-INSERT INTO players VALUES (10107, 'Brett', 'Hundley', 101, 'QB', 9, 1836, 5700000);
-INSERT INTO players VALUES (10101, 'Kyler', 'Murray', 101, 'QB', 4, 1324, 2400000);
-INSERT INTO players VALUES (10129, 'Chase', 'Edmonds', 101, 'RB', 2, 208, 670000);
-INSERT INTO players VALUES (10137, 'D.J.', 'Foster', 101, 'RB', 0, 19, 890000);
-INSERT INTO players VALUES (10111, 'Larry', 'Fitzgerald', 101, 'WR', 6, 734, 770000);
-INSERT INTO players VALUES ('10112', 'Eli', 'Manning', '105', 'QB', '6', '764', '790000');
-INSERT INTO players VALUES ('10151', 'Jose Luis', 'Barrera', '121', 'WR', '9', '734', '770000');
+INSERT INTO players VALUES (10107, 'Brett', 'Hundley', 1, 'QB', 9, 1836, 5700000);
+INSERT INTO players VALUES (10101, 'Kyler', 'Murray', 11, 'QB', 4, 1324, 2400000);
+INSERT INTO players VALUES (10129, 'Chase', 'Edmonds', 10, 'RB', 2, 208, 670000);
+INSERT INTO players VALUES (10137, 'D.J.', 'Foster', 10, 'RB', 0, 19, 890000);
+INSERT INTO players VALUES (10111, 'Larry', 'Fitzgerald', 1, 'WR', 6, 734, 770000);
+INSERT INTO players VALUES ('10112', 'Eli', 'Manning', '5', 'QB', '6', '764', '790000');
+INSERT INTO players VALUES ('10151', 'Jose Luis', 'Barrera', '12', 'WR', '9', '734', '770000');
 
 SET SQL_SAFE_UPDATES = 0;
 DELETE FROM players;

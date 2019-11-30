@@ -61,7 +61,7 @@ def loadDataInsert():
         try:
             starttime = time.time()
             
-            filename = "/tmp/" + filename
+            #filename = "/tmp/" + filename
             print (filename)
             #command = "LOAD DATA INFILE '" + filename + "' INTO TABLE " + tableName + " fields terminated BY ',' lines terminated BY '\n';"
             command = "LOAD DATA LOCAL INFILE '" + filename + "' INTO TABLE " + tableName + " fields terminated BY ',' lines terminated BY '\n';"
@@ -109,9 +109,10 @@ def singleInsert():
         cur.execute("SET SQL_SAFE_UPDATES = 0;")
         cur.execute("DELETE from " + tableName + ";")
         cur.execute("SET SQL_SAFE_UPDATES = 1;")
-        starttime = time.time()
         f = open(filename, "r")
         line = f.readline()
+        starttime = time.time()
+        
         while line:
             line = line.strip('\n')
             value = line.split(",")
@@ -153,6 +154,79 @@ def singleInsert():
         print ('Insert data successful!')
         result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)
+
+#-------------------------------------------------------------------------------------------------------------------
+def multiLineInsert():
+    #delete all entries in players first
+    success = True
+    (cur, conn) = connectToDB()
+        
+    filename= insertInput_text.get()
+    if "players" in filename.lower():
+        tableName = "players"
+        flag = True
+    elif "games" in filename.lower():
+        tableName = "games"
+        flag = True
+    elif "play" in filename.lower():
+        tableName = "play"
+        flag = True
+    elif "teams" in filename.lower():
+        tableName = "teams"
+        flag = True
+    else:
+        tk.messagebox.showinfo("Alert Message", "Please enter a valid table:\n players, games, teams, or play!")
+        flag = False
+        
+    if flag == True:
+        cur.execute("SET SQL_SAFE_UPDATES = 0;")
+        cur.execute("DELETE from " + tableName + ";")
+        cur.execute("SET SQL_SAFE_UPDATES = 1;")
+        
+        f = open(filename, "r")
+        line = f.readline()
+        command = "INSERT INTO " + tableName + " VALUES "
+        while line:
+            line = line.strip('\n')
+            values = line.split(",")
+            tuple = ""
+            for index in range(len(values)):
+                if index == 0:
+                    tuple += "('" + values[index] + "'"
+                elif index == len(values) - 1:
+                    tuple += ", '" + values[index] + "'),"
+                else:
+                    tuple += ",'" + values[index] + "'"
+            
+            command += tuple
+            line = f.readline()
+        command = command[:-1]
+        starttime = time.time()
+        try:
+            if tableName == "players":
+                cur.execute(command)
+            elif tableName == "games":
+                cur.execute(command)
+            elif tableName == "play":
+                cur.execute(command)
+            else:
+                cur.execute(command)
+            
+        except Exception as e:
+            tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
+            success = False
+    else:
+        tk.messagebox.showinfo("Alert Message", "Please enter a valid file that contains a table name!")
+
+    f.close()
+    cur.close()
+    conn.commit()
+    conn.close()
+    endtime = time.time()
+    if success:
+        print ('Insert data successful!')
+        result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
+        tk.messagebox.showinfo(title='Result', message=result)
     
 #---------------------------------------------------------------------------------------------
 def getQuery():
@@ -183,7 +257,6 @@ def getQuery():
             queryTextbox.insert(0.0, output)
                 
         elif (tableName.lower() == "teams"):
-            #print ("\n   Team ID\t|\tTeam Name\t|\tCity")
             output = ("{0:>0} {1:>12} {2:>15}".format(desc[0][0], desc[1][0], desc[2][0])) + "\n" #8 columns
             for row in rows:
                 output += ("{0:>4} {1:>15} {2:>15} ".format(row[0], row[1], row[2])) + "\n"
@@ -228,10 +301,13 @@ def getAverage():
                 averageQuery = "SELECT avg(" + attributeName + ") as " + attributeName + " FROM " + tableName + ";"
             
         (cur, conn) = connectToDB()
+        starttime = time.time()
         cur.execute(averageQuery)
         rows = cur.fetchall()
+        endtime = time.time()
         desc = cur.description
-            
+        result = "Average calculation successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
+        tk.messagebox.showinfo(title='Result', message=result)
         output = "The average number of "
         output = ("{0:>0}".format(desc[0][0])) + " in the " + tableName + " table is:\n"
         for row in rows:
@@ -297,7 +373,7 @@ insertLabel = Label(top_frame, text='Please enter an Input file with insertion d
 insertInput_text = StringVar()
 insertInput = Entry(top_frame, textvariable=insertInput_text).pack()
 singleInsert = Button (top_frame, text="Single Line Insert", command=singleInsert).pack()
-multipleInsert = Button (top_frame, text="Multile Line Insert").pack()
+multipleInsert = Button (top_frame, text="Multile Line Insert", command=multiLineInsert).pack()
 loadInsert = Button (top_frame, text="Load Data Insert", command=loadDataInsert).pack()
 
      
