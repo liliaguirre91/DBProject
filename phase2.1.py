@@ -27,8 +27,8 @@ import os
 def connectToDB():
 
     try:
-        #con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers', local_infile=1)
-        con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
+        con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers', local_infile=1)
+        #con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
         #con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
 
         cur = con.cursor()
@@ -37,10 +37,12 @@ def connectToDB():
          tk.messagebox.showinfo("Alert Message", "Could not connect to database:\n" + str(e))
 #----------------------------end connectToDB#----------------------------
 
+#------------------------------------------------------------------------------------------------
 #This function is used to insert data in a bulk format
 #this reads and inserts data as a whole instead of line by line
 #if load is successful message is printed in output box
 #timing functionaity is called and is displayed after each successful implementation
+#------------------------------------------------------------------------------------------------
 def loadDataInsert():
     success = True
     (cur, conn) = connectToDB()
@@ -70,7 +72,6 @@ def loadDataInsert():
         try:
             starttime = time.time()
             
-            #filename = "/tmp/" + filename
             print (filename)
             #line format has ',' between attribute values therefore use "fields terminated by"
             command = "LOAD DATA LOCAL INFILE '" + filename + "' INTO TABLE " + tableName + " fields terminated BY ',' lines terminated BY '\n';"
@@ -91,12 +92,14 @@ def loadDataInsert():
         print ('Insert data successful!')
         result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)        
-#--------------------------------end loadDataInsert----------------------------
-        
+#--------------------------------end loadDataInsert-------------------------------------------------------
+
+#---------------------------------------------------------------------------------------------------------
 #This function  inserts data from a text file line by line
 #An individual query will be run on each line that is being inserted
 #if load is successful message is printed in output box
 #timing functionaity is called and is displayed after each successful implementation
+#---------------------------------------------------------------------------------------------------------
 def singleInsert():
     #delete all entries in players first
     success = True
@@ -168,12 +171,14 @@ def singleInsert():
         print ('Insert data successful!')
         result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)
-#------------------------------------end singleInsert--------------------------
+#------------------------------------end singleInsert-----------------------------------------------------
 
+#--------------------------------------------------------------------------------------------------------
 #This function is used to insert data in a series of linked lines
 #this reads and inserts data as a whole instead of line by line
 #if load is successful message is printed in output box
 #timing functionaity is called and is displayed after each successful implementation
+#--------------------------------------------------------------------------------------------------------
 def multiLineInsert():
     #delete all entries in players first
     success = True
@@ -233,8 +238,8 @@ def multiLineInsert():
         except Exception as e:
             tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
             success = False
-    else:
-        tk.messagebox.showinfo("Alert Message", "Please enter a valid file that contains a table name!")
+    #else:
+     #   tk.messagebox.showinfo("Alert Message", "Please enter a valid file that contains a table name!")
 
     f.close()
     cur.close()
@@ -247,10 +252,12 @@ def multiLineInsert():
         tk.messagebox.showinfo(title='Result', message=result)
 #----------------------------------end multiLineInsert----------------------------------------
 
-#this function will display all the tuples in a given table
+#--------------------------------------------------------------------------------------------------------
+#This function will display all the tuples in a given table
 #prints table tuples in textbox in formated form
 #checks for valid table names: PLAYERS, GAMES, TEAMS, PLAY
 #deletes the pervious query before new tuples are displayed
+#--------------------------------------------------------------------------------------------------------
 def getQuery():
     queryTextbox.delete('1.0','end')
     tableName = queryInput_text.get()
@@ -264,15 +271,17 @@ def getQuery():
         rows = cur.fetchall()
         desc = cur.description      #this gets the attribute names
         if (tableName.lower() == "players"):
-            output = ("{0:>8} {1:>15} {2:>12} {3:>8} {4:>12} {5:>12} {6:>12} {7:>10}".format(desc[0][0], desc[1][0], desc[2][0], desc[3][0], desc[4][0], desc[5][0], desc[6][0], desc[7][0])) + "\n" #8 columns
+            output = ("{0:>8} {1:>15} {2:>12} {3:>8} {4:>12} {5:>12} {6:>12} {7:>10}".format(desc[0][0], desc[1][0], desc[2][0],
+            desc[3][0], desc[4][0], desc[5][0], desc[6][0], desc[7][0])) + "\n" #8 columns
             for row in rows:
-                output += ("{0:>8} {1:>15} {2:>14} {3:>7} {4:>11} {5:>11} {6:>10} {7:>15}".format(row[0], row[1], row[2], row [3], row[4], row[5], row[6], row[7])) + "\n"
+                output += ("{0:>8} {1:>15} {2:>14} {3:>7} {4:>11} {5:>11} {6:>10} {7:>15}".format(row[0], row[1], row[2], row [3],
+                row[4], row[5], row[6], row[7])) + "\n"
             output += "\n"
             queryTextbox.insert(0.0, output)
                 
         elif (tableName.lower() == "games"):
-            #print ("\n   Game ID\t|\tDate\t|\tStadium\t|\tResult\t|\tAttendance\t|\tTicket revenue")
-            output = ("{0:>0} {1:>10} {2:>30} {3:>16} {4:>15} {5:>15}".format(desc[0][0], desc[1][0], desc[2][0], desc[3][0], desc[4][0], desc[5][0])) + "\n" #6 attributes
+            output = ("{0:>0} {1:>10} {2:>30} {3:>16} {4:>15} {5:>15}".format(desc[0][0], desc[1][0], desc[2][0], desc[3][0],
+            desc[4][0], desc[5][0])) + "\n" #6 attributes
             for row in rows:
                 output += ("{0:>4} {1:>15} {2:>30} {3:>9} {4:>15} {5:>15}".format(row[0], str(row[1]), row[2], row [3], row[4], row[5])) + "\n"
             output += "\n"
@@ -286,7 +295,6 @@ def getQuery():
             queryTextbox.insert(0.0, output)
                
         elif (tableName.lower() == "play"):
-            #print ("\n   PlayerID\t|\tGame ID")
             output = ("{0:>3} {1:>7}".format(desc[0][0], desc[1][0])) + "\n" #8 columns
             for row in rows:
                 output += ("{0:>4} {1:>10}".format(row[0], row[1])) + "\n"
@@ -295,14 +303,16 @@ def getQuery():
             cur.close()
             conn.close()
             
- #---------------------------------end getQuery()---------------------------
+#---------------------------------end getQuery()---------------------------
  
+#--------------------------------------------------------------------------------------------------------
 #This function gets and prints the average of a given attribute in a table
 #Checks for valid tables and attributes
 #Valide tables: PLAYERS and GAMES
 #Valid attributes: TOUCHDOWNS, TOTALYARDS, SALARY, ATTENDANCE, TICKETREVENUE
 #finds and displays time needed to expecture the average query
 #result is a single tuple displayed in textbox
+#--------------------------------------------------------------------------------------------------------
 def getAverage():
     avgTextbox.delete('1.0','end')
     tableName     = findAvgTableInput_text.get()
@@ -347,11 +357,12 @@ def getAverage():
     conn.close()
 #----------------------------------------end getAverage()---------------------------------------------------------
 
+#--------------------------------------------------------------------------------------------------------
 #this function is used to delete the data inside a given table
 #checks for valid tables
 #constraints for PLAYERS, PLAYS, GAMES are delete on cascade from TEAM
 #Alert message is displayed upon successful implimentation
-
+#--------------------------------------------------------------------------------------------------------
 def deleteTable():
     tablen = deleteInput_text.get()
     if (tablen.lower() != "players" and tablen.lower() != "games" and tablen.lower() != "teams" and  tablen.lower() != "play"):
@@ -368,39 +379,49 @@ def deleteTable():
         conn.close()
     tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
 #------------------------------end deleteTable-----------------------------------
-    
-#scrollbar = Scrollbar(window).pack( side = "right", fill = "y" )
-#current_row = 0
-#self.insertionSection(window)
-#self.deleteSection(window)
-#self.querySection(window)
 
-#<<<<<<< HEAD
+
+
+
+
+#--------------------------------------------------------------------------------------------------------
+# This funciton the adjustment of the scrollbar
+#--------------------------------------------------------------------------------------------------------
 def onFrameConfig (canvas):
     canvas.configure(scrollregion=canvas.bbox("all"))
 
-#------------------------------------Creating Window----------------------------      
-window = tk.Tk()
-#start = App(window)
-window.wm_title("Database Phase 2 GUI")
-window.geometry('770x700') 
-       
-canvas = Canvas(window, borderwidth=10)
 
-#Creating scrollbar for entire 
+#--------------------------------------------Creating Window---------------------------------------------
+# The following is the code used to create the UI. Each small section takes care of a corresponding
+# section in the UI. Note that the order of the code is important, since everything is being rendered
+# to the screen in the order in which is instantiated.
+#--------------------------------------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------------------------------------
+# Creating a Tkinter object using the module and then creatina canvas where all widgets will exist
+#--------------------------------------------------------------------------------------------------------
+window = tk.Tk()
+window.wm_title("Database Phase 2 GUI")
+window.geometry('770x720')
+canvas = Canvas(window, borderwidth=1)
+
+#Creating scrollbar for entire window
 windowScrollbar = Scrollbar(window, orient="vertical", command=canvas.yview)
-canvas.configure(width=2000, height=650, yscrollcommand=windowScrollbar.set)
+canvas.configure(width=2000, height=750, yscrollcommand=windowScrollbar.set)
 windowScrollbar.pack( side = "right", fill = "y" )
 canvas.pack(expand="yes")
 top_frame = Frame(canvas)
 canvas.create_window((10, 10), window=top_frame, anchor="nw")
 top_frame.bind("<Configure>", lambda event, canvas=canvas:onFrameConfig(canvas))
-#top_frame.pack(expand="yes")
 
+#----------------------------------------Creating Widgets for all Tasks-----------------------------------
+
+#--------------------------------------------------------------------------------------------------------
 #Insertion GUI Portion #1
 #Insetion Buttons: SINGLE LINE, MULTIPLE LINE, LOAD DATA
 #insertion textboxL where to enter path location to file
-insertHeading = Label(top_frame,text='INSERTIONS', fg="white", bg="gray").pack(pady=20, fill="x")#grid(row=self.current_row, column=0, rowspan="5")
+#--------------------------------------------------------------------------------------------------------
+insertHeading = Label(top_frame,text='INSERTIONS', fg="white", bg="gray").pack(pady=20, fill="x")
 insertLabel = Label(top_frame, text='Please enter an Input file with insertion data and select the insert type:').pack()
 insertInput_text = StringVar()
 insertInput = Entry(top_frame, textvariable=insertInput_text).pack()
@@ -408,10 +429,11 @@ singleInsert = Button (top_frame, text="Single Line Insert", command=singleInser
 multipleInsert = Button (top_frame, text="Multile Line Insert", command=multiLineInsert).pack()
 loadInsert = Button (top_frame, text="Load Data Insert", command=loadDataInsert).pack()
 
-     
+#--------------------------------------------------------------------------------------------------------
 #GetQuery GUI Portion #2
 #getQuery Button: getQuer
 #getQuery textbox where to enter name of table
+#--------------------------------------------------------------------------------------------------------
 queryHeading = Label(top_frame,text='QUERY', fg="white", bg="gray").pack(pady=20, fill="x")
 queryLabel = Label(top_frame, text='Please enter the name of the table you would like to query:').pack()
 queryInput_text = StringVar()
@@ -423,19 +445,21 @@ queryTextbox = Text(top_frame, height=25, width=100, relief= "ridge", borderwidt
 queryTextbox.pack()
 queryScroll.config(command=queryTextbox.yview)
 
-
+#--------------------------------------------------------------------------------------------------------
 #deleteTable GUI Portion #3
 #deleteTable Button: delete
+#--------------------------------------------------------------------------------------------------------
 deleteHeading = Label(top_frame,text='DELETIONS', fg="white", bg="gray").pack(pady=20, fill="x")
 deleteLabel = Label(top_frame, text='Enter the name of the table that will be deleted').pack()
 deleteInput_text = StringVar()
 deleteInput = Entry(top_frame, textvariable=deleteInput_text).pack()
 delete_button = Button (top_frame, text="Delete table", command = deleteTable).pack()
 
-
+#--------------------------------------------------------------------------------------------------------
 #findAverage GUI Portion #4
 #findAverage: Buttons; TABLE, ATTRIBUTE
 #findAverage textbox where to view the average of the given attribute
+#--------------------------------------------------------------------------------------------------------
 findAvgHeading = Label (top_frame, text = 'FIND AVERAGE', fg='white', bg='gray').pack(pady=10, fill='x')
 findAvgLabel = Label(top_frame, text='Enter the table and attribute you would like to access').pack()
 findAvgTableLabel = Label(top_frame, text = 'Table:     ').pack()
@@ -445,9 +469,10 @@ attributeLabel = Label(top_frame, text = 'Attribute:').pack()
 attributeInput_text = StringVar()
 attributeInput = Entry(top_frame, textvariable = attributeInput_text).pack()
 average_button = Button (top_frame, text="Find Average", highlightcolor='green', highlightthickness=4, command=getAverage).pack()
-avgTextbox = Text(top_frame, height=2, width=40, relief= "ridge", borderwidth= 6)
+avgTextbox = Text(top_frame, height=3, width=40, relief= "ridge", borderwidth= 6)
 avgTextbox.pack()
 
+# This maintains the infinite loop that renders all elements to screen
 window.mainloop()
 
             
