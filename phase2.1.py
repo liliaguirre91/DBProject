@@ -1,7 +1,14 @@
+#CS 482: Database
+#Project Phase 2: Fall 2019
+#Team 6:
+#Liliana Esparza
+#Bianca
+#Anaira Quezada
 
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # This must be run using Python 3
+# File names will include the table they are inserting into
 
 from tkinter import *
 from tkinter import messagebox
@@ -12,31 +19,33 @@ import time
 import datetime
 import re
 import os
-
-
-# Class will set up the GUI
-#class App(object):
-    
-    #def __init__(self, window):
-        #Set the window's title
-       
-        #self.formatWindow(window)
+        
+#------------------------------------------------------------------------------
+#This function is used to connect python to mySQL 
+#returns the cursor and connection if connection is successful
+#print an error message in window if unsuccessful
 def connectToDB():
 
     try:
-        con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers', local_infile=1)
-        #con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
+        #con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers', local_infile=1)
+        con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
         #con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
 
         cur = con.cursor()
         return (cur, con)
     except Exception as e:
          tk.messagebox.showinfo("Alert Message", "Could not connect to database:\n" + str(e))
+#----------------------------end connectToDB#----------------------------
 
+#This function is used to insert data in a bulk format
+#this reads and inserts data as a whole instead of line by line
+#if load is successful message is printed in output box
+#timing functionaity is called and is displayed after each successful implementation
 def loadDataInsert():
     success = True
     (cur, conn) = connectToDB()
     
+    #check to see if table name is valid in our database
     filename = insertInput_text.get()
     if "players" in filename.lower():
         tableName = "players"
@@ -63,7 +72,7 @@ def loadDataInsert():
             
             #filename = "/tmp/" + filename
             print (filename)
-            #command = "LOAD DATA INFILE '" + filename + "' INTO TABLE " + tableName + " fields terminated BY ',' lines terminated BY '\n';"
+            #line format has ',' between attribute values therefore use "fields terminated by"
             command = "LOAD DATA LOCAL INFILE '" + filename + "' INTO TABLE " + tableName + " fields terminated BY ',' lines terminated BY '\n';"
             print (command)
             cur.execute(command)
@@ -77,12 +86,17 @@ def loadDataInsert():
     conn.commit()
     conn.close()
     endtime = time.time()
+    #if opperation was correct print message in textbox
     if success:
         print ('Insert data successful!')
         result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
-        tk.messagebox.showinfo(title='Result', message=result)
+        tk.messagebox.showinfo(title='Result', message=result)        
+#--------------------------------end loadDataInsert----------------------------
         
-#-------------------------------------------------------------------------------------------------------------------
+#This function  inserts data from a text file line by line
+#An individual query will be run on each line that is being inserted
+#if load is successful message is printed in output box
+#timing functionaity is called and is displayed after each successful implementation
 def singleInsert():
     #delete all entries in players first
     success = True
@@ -154,8 +168,12 @@ def singleInsert():
         print ('Insert data successful!')
         result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)
+#------------------------------------end singleInsert--------------------------
 
-#-------------------------------------------------------------------------------------------------------------------
+#This function is used to insert data in a series of linked lines
+#this reads and inserts data as a whole instead of line by line
+#if load is successful message is printed in output box
+#timing functionaity is called and is displayed after each successful implementation
 def multiLineInsert():
     #delete all entries in players first
     success = True
@@ -227,8 +245,12 @@ def multiLineInsert():
         print ('Insert data successful!')
         result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)
-    
-#---------------------------------------------------------------------------------------------
+#----------------------------------end multiLineInsert----------------------------------------
+
+#this function will display all the tuples in a given table
+#prints table tuples in textbox in formated form
+#checks for valid table names: PLAYERS, GAMES, TEAMS, PLAY
+#deletes the pervious query before new tuples are displayed
 def getQuery():
     queryTextbox.delete('1.0','end')
     tableName = queryInput_text.get()
@@ -275,7 +297,12 @@ def getQuery():
             
  #---------------------------------end getQuery()---------------------------
  
-#-------------------------------------------------------------------------------------------------------------------
+#This function gets and prints the average of a given attribute in a table
+#Checks for valid tables and attributes
+#Valide tables: PLAYERS and GAMES
+#Valid attributes: TOUCHDOWNS, TOTALYARDS, SALARY, ATTENDANCE, TICKETREVENUE
+#finds and displays time needed to expecture the average query
+#result is a single tuple displayed in textbox
 def getAverage():
     avgTextbox.delete('1.0','end')
     tableName     = findAvgTableInput_text.get()
@@ -305,24 +332,26 @@ def getAverage():
         cur.execute(averageQuery)
         rows = cur.fetchall()
         endtime = time.time()
+        
         desc = cur.description
         result = "Average calculation successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)
-        output = "The average number of "
+        #output = "The average number of "
         output = ("{0:>0}".format(desc[0][0])) + " in the " + tableName + " table is:\n"
         for row in rows:
             output = output + str(row[0])
+            
     output += "\n"
     avgTextbox.insert(0.0, output )
     cur.close()
     conn.close()
 #----------------------------------------end getAverage()---------------------------------------------------------
 
-#<<<<<<< HEAD
-def onFrameConfig (canvas):
-    canvas.configure(scrollregion=canvas.bbox("all"))
-#=======
-#----------------------------------------start deletion()----------------------------------------------------------
+#this function is used to delete the data inside a given table
+#checks for valid tables
+#constraints for PLAYERS, PLAYS, GAMES are delete on cascade from TEAM
+#Alert message is displayed upon successful implimentation
+
 def deleteTable():
     tablen = deleteInput_text.get()
     if (tablen.lower() != "players" and tablen.lower() != "games" and tablen.lower() != "teams" and  tablen.lower() != "play"):
@@ -338,26 +367,27 @@ def deleteTable():
         conn.commit()
         conn.close()
     tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
-#---------------------------------------end deletion()-------------------------------------------------------------
-#>>>>>>> e5e7583d82c768a8beff5918b3e6884e91aa83eb
-
-window = tk.Tk()
-#start = App(window)
-window.wm_title("Database Phase 2 GUI")
-window.geometry('770x700')
-
-
-#-------------------------------------------------------------------------------------------------------------------
+#------------------------------end deleteTable-----------------------------------
+    
 #scrollbar = Scrollbar(window).pack( side = "right", fill = "y" )
 #current_row = 0
 #self.insertionSection(window)
 #self.deleteSection(window)
 #self.querySection(window)
-        
-        
-#---------------------------------------------------------------------------------------------
+
+#<<<<<<< HEAD
+def onFrameConfig (canvas):
+    canvas.configure(scrollregion=canvas.bbox("all"))
+
+#------------------------------------Creating Window----------------------------      
+window = tk.Tk()
+#start = App(window)
+window.wm_title("Database Phase 2 GUI")
+window.geometry('770x700') 
+       
 canvas = Canvas(window, borderwidth=10)
 
+#Creating scrollbar for entire 
 windowScrollbar = Scrollbar(window, orient="vertical", command=canvas.yview)
 canvas.configure(width=2000, height=650, yscrollcommand=windowScrollbar.set)
 windowScrollbar.pack( side = "right", fill = "y" )
@@ -367,7 +397,9 @@ canvas.create_window((10, 10), window=top_frame, anchor="nw")
 top_frame.bind("<Configure>", lambda event, canvas=canvas:onFrameConfig(canvas))
 #top_frame.pack(expand="yes")
 
-#--------------------------------------------------------------------------------------------------------
+#Insertion GUI Portion #1
+#Insetion Buttons: SINGLE LINE, MULTIPLE LINE, LOAD DATA
+#insertion textboxL where to enter path location to file
 insertHeading = Label(top_frame,text='INSERTIONS', fg="white", bg="gray").pack(pady=20, fill="x")#grid(row=self.current_row, column=0, rowspan="5")
 insertLabel = Label(top_frame, text='Please enter an Input file with insertion data and select the insert type:').pack()
 insertInput_text = StringVar()
@@ -377,7 +409,9 @@ multipleInsert = Button (top_frame, text="Multile Line Insert", command=multiLin
 loadInsert = Button (top_frame, text="Load Data Insert", command=loadDataInsert).pack()
 
      
-#---------------------------------------------------------------------------------------------
+#GetQuery GUI Portion #2
+#getQuery Button: getQuer
+#getQuery textbox where to enter name of table
 queryHeading = Label(top_frame,text='QUERY', fg="white", bg="gray").pack(pady=20, fill="x")
 queryLabel = Label(top_frame, text='Please enter the name of the table you would like to query:').pack()
 queryInput_text = StringVar()
@@ -390,8 +424,8 @@ queryTextbox.pack()
 queryScroll.config(command=queryTextbox.yview)
 
 
-#---------------------------------------------------------------------------------------------
-        #delete
+#deleteTable GUI Portion #3
+#deleteTable Button: delete
 deleteHeading = Label(top_frame,text='DELETIONS', fg="white", bg="gray").pack(pady=20, fill="x")
 deleteLabel = Label(top_frame, text='Enter the name of the table that will be deleted').pack()
 deleteInput_text = StringVar()
@@ -399,7 +433,9 @@ deleteInput = Entry(top_frame, textvariable=deleteInput_text).pack()
 delete_button = Button (top_frame, text="Delete table", command = deleteTable).pack()
 
 
- #---------------------------------------------------------------------------------------------
+#findAverage GUI Portion #4
+#findAverage: Buttons; TABLE, ATTRIBUTE
+#findAverage textbox where to view the average of the given attribute
 findAvgHeading = Label (top_frame, text = 'FIND AVERAGE', fg='white', bg='gray').pack(pady=10, fill='x')
 findAvgLabel = Label(top_frame, text='Enter the table and attribute you would like to access').pack()
 findAvgTableLabel = Label(top_frame, text = 'Table:     ').pack()
@@ -415,11 +451,6 @@ avgTextbox.pack()
 window.mainloop()
 
             
-
-            #print(query)
-#---------------------------------------------------------------------------------------------
-
-    
 
 
 
