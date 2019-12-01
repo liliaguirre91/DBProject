@@ -28,8 +28,8 @@ def connectToDB():
 
     try:
         #con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers', local_infile=1)
-        con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
-        #con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
+        #con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
+        con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
 
         cur = con.cursor()
         return (cur, con)
@@ -352,13 +352,11 @@ def getAverage():
 #constraints for PLAYERS, PLAYS, GAMES are delete on cascade from TEAM
 #Alert message is displayed upon successful implimentation
 
-def deleteTable():
+def deleteTable():  
+    valid = True
     tablen = deleteInput_text.get()
-    if (tablen.lower() != "players" and tablen.lower() != "games" and tablen.lower() != "teams" and  tablen.lower() != "play"):
-        tk.messagebox.showinfo("Alert Message", "Please enter a valid table: players, games, teams, or play")
-    else:
+    if (tablen.lower() == "players" or tablen.lower() == "games" or tablen.lower() == "teams" or tablen.lower() == "play"):
         query = "DELETE FROM " + tablen + ";"
-        #table = tableName
         (cur, conn) = connectToDB()
         cur.execute("SET SQL_SAFE_UPDATES = 0;")
         cur.execute(query)
@@ -366,7 +364,12 @@ def deleteTable():
         cur.close()
         conn.commit()
         conn.close()
-    tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
+        valid = True
+    else:
+        tk.messagebox.showinfo("Alert Message", "Please enter a valid table: players, games, teams, or play")
+        valid = False
+    if valid:
+        tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
 #------------------------------end deleteTable-----------------------------------
     
 #scrollbar = Scrollbar(window).pack( side = "right", fill = "y" )
