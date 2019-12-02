@@ -1,8 +1,8 @@
 #CS 482: Database
 #Project Phase 2: Fall 2019
 #Team 6:
-#Liliana Esparza
-#Bianca
+#Liliana Aguirre Esparza
+#Bianca Lujan
 #Anaira Quezada
 
 #!/usr/bin/python3
@@ -20,16 +20,19 @@ import datetime
 import re
 import os
         
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
 #This function is used to connect python to mySQL 
 #returns the cursor and connection if connection is successful
 #print an error message in window if unsuccessful
+#--------------------------------------------------------------------------------------------------------
 def connectToDB():
 
     try:
+
         con = MySQL.connect('localhost', 'root', 'databaseTeam#6', 'OffensiveNFLPlayers', local_infile=1)
         #con = MySQL.connect('localhost', 'root', 'Databases19', 'ProjectDB')
         #con = MySQL.connect('localhost', 'root', 'B1ahB1ah@563130', 'nflplayers')
+
 
         cur = con.cursor()
         return (cur, con)
@@ -65,24 +68,29 @@ def loadDataInsert():
         tk.messagebox.showinfo("Alert Message", "Please enter a valid table:\n players, games, teams, or play!")
         flag = False
     
+    #If the file name conatins the table name then go ahead with the insertion
     if flag == True:
+        # Delete all data in the table first. This will be removed once we want to insert data consecutively.
+        # These three lines are here for testing with generated file purposes only.
         cur.execute("SET SQL_SAFE_UPDATES = 0;")
         cur.execute("DELETE from " + tableName + ";")
         cur.execute("SET SQL_SAFE_UPDATES = 1;")
         try:
             starttime = time.time()
             
-            print (filename)
             #line format has ',' between attribute values therefore use "fields terminated by"
             command = "LOAD DATA LOCAL INFILE '" + filename + "' INTO TABLE " + tableName + " fields terminated BY ',' lines terminated BY '\n';"
-            print (command)
             cur.execute(command)
+        
+        # If something goes wrong print a message, delete all data
         except Exception as e:
             tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
             cur.execute("SET SQL_SAFE_UPDATES = 0;")
             cur.execute("DELETE from Players;")
             cur.execute("SET SQL_SAFE_UPDATES = 1;")
             success = False
+    
+    # Close DB connection, record changes, and record end time
     cur.close()
     conn.commit()
     conn.close()
@@ -90,7 +98,7 @@ def loadDataInsert():
     #if opperation was correct print message in textbox
     if success:
         print ('Insert data successful!')
-        result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
+        result = "Load Data Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)        
 #--------------------------------end loadDataInsert-------------------------------------------------------
 
@@ -104,8 +112,9 @@ def singleInsert():
     #delete all entries in players first
     success = True
     (cur, conn) = connectToDB()
-        
     filename= insertInput_text.get()
+    
+    # Check that file name contains a table name
     if "players" in filename.lower():
         tableName = "players"
         flag = True
@@ -121,55 +130,64 @@ def singleInsert():
     else:
         tk.messagebox.showinfo("Alert Message", "Please enter a valid table:\n players, games, teams, or play!")
         flag = False
-        
+    
     if flag == True:
+        # Delete all data in the table first. This will be removed once we want to insert data consecutively.
+        # These three lines are here for testing purposes only.
         cur.execute("SET SQL_SAFE_UPDATES = 0;")
         cur.execute("DELETE from " + tableName + ";")
         cur.execute("SET SQL_SAFE_UPDATES = 1;")
-        f = open(filename, "r")
-        line = f.readline()
-        starttime = time.time()
         
-        while line:
-            line = line.strip('\n')
-            value = line.split(",")
-            command = "INSERT INTO " + tableName + " VALUES (" + line + ");"
-            #command = "INSERT INTO " + tableName + " VALUES (" + value[0] + value[1] + value[2] + value[3] + value[4] + value[5] + value[6] + ");"
-            #cur.execute( command) #, [value[0], value[1], value[2], value[3], value[4], value[5], value[6]])
-            try:
-                if tableName == "players":
-                    cur.execute("INSERT INTO " + tableName + " values(%s,%s,%s,%s,%s,%s,%s,%s)",
-                    [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7]])
-                elif tableName == "games":
-                    cur.execute("INSERT INTO " + tableName + " values(%s,%s,%s,%s,%s,%s)",
-                    [value[0], value[1], value[2], value[3], value[4], value[5]])
-                elif tableName == "play":
-                    cur.execute("INSERT INTO " + tableName + " values(%s,%s)", [value[0], value[1]])
-                else:
-                    #print (value)
-                    cur.execute("INSERT INTO " + tableName + " values(%s,%s,%s)", [value[0], value[1], value[2]])
-                    
-                #print (command)
-                line = f.readline()
+        # Try opening the input file
+        try:
+            f = open(filename, "r")
+            line = f.readline()
+            starttime = time.time() # Record Start time
             
-            except Exception as e:
-                tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
-                cur.execute("SET SQL_SAFE_UPDATES = 0;")
-                cur.execute("DELETE from Players;")
-                cur.execute("SET SQL_SAFE_UPDATES = 1;")
-                success = False
-                break
-        #else:
-         #   tk.messagebox.showinfo("Alert Message", "Please enter a valid file that contains a table name!")
-
-    f.close()
+            # Read each line in the file and split it into individual values
+            while line:
+                line = line.strip('\n')
+                value = line.split(",")
+                
+                # Execute the insert command for the read line
+                try:
+                    if tableName == "players":
+                        cur.execute("INSERT INTO " + tableName + " values(%s,%s,%s,%s,%s,%s,%s,%s)",
+                        [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7]])
+                    elif tableName == "games":
+                        cur.execute("INSERT INTO " + tableName + " values(%s,%s,%s,%s,%s,%s)",
+                        [value[0], value[1], value[2], value[3], value[4], value[5]])
+                    elif tableName == "play":
+                        cur.execute("INSERT INTO " + tableName + " values(%s,%s)", [value[0], value[1]])
+                    else:
+                        cur.execute("INSERT INTO " + tableName + " values(%s,%s,%s)", [value[0], value[1], value[2]])
+                        
+                    line = f.readline()
+                
+                # If something goes wrong print a message, delete all data and exit the loop
+                except Exception as e:
+                    tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
+                    cur.execute("SET SQL_SAFE_UPDATES = 0;")
+                    cur.execute("DELETE from Players;")
+                    cur.execute("SET SQL_SAFE_UPDATES = 1;")
+                    success = False
+                    break
+            f.close()   #Close the inout file
+        
+        # Print an error message if the input file cannot be opened
+        except Exception as e:
+            tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
+    
+    # Close DB connection, record changes, and record end time
     cur.close()
     conn.commit()
     conn.close()
     endtime = time.time()
+    
+    # Display success message and disply elapsed time
     if success:
         print ('Insert data successful!')
-        result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
+        result = "Single Line Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)
 #------------------------------------end singleInsert-----------------------------------------------------
 
@@ -183,8 +201,9 @@ def multiLineInsert():
     #delete all entries in players first
     success = True
     (cur, conn) = connectToDB()
-        
     filename= insertInput_text.get()
+    
+    # Check that file name contains a table name
     if "players" in filename.lower():
         tableName = "players"
         flag = True
@@ -202,53 +221,69 @@ def multiLineInsert():
         flag = False
         
     if flag == True:
+        # Delete all data in the table first. This will be removed once we want to insert data consecutively.
+        # These three lines are here for testing purposes only.
         cur.execute("SET SQL_SAFE_UPDATES = 0;")
         cur.execute("DELETE from " + tableName + ";")
         cur.execute("SET SQL_SAFE_UPDATES = 1;")
         
-        f = open(filename, "r")
-        line = f.readline()
-        command = "INSERT INTO " + tableName + " VALUES "
-        while line:
-            line = line.strip('\n')
-            values = line.split(",")
-            tuple = ""
-            for index in range(len(values)):
-                if index == 0:
-                    tuple += "('" + values[index] + "'"
-                elif index == len(values) - 1:
-                    tuple += ", '" + values[index] + "'),"
-                else:
-                    tuple += ",'" + values[index] + "'"
-            
-            command += tuple
-            line = f.readline()
-        command = command[:-1]
-        starttime = time.time()
+        # Try opening the input file
         try:
-            if tableName == "players":
-                cur.execute(command)
-            elif tableName == "games":
-                cur.execute(command)
-            elif tableName == "play":
-                cur.execute(command)
-            else:
-                cur.execute(command)
+            f = open(filename, "r")
+            line = f.readline()
+            command = "INSERT INTO " + tableName + " VALUES "
             
+            while line:
+                line = line.strip('\n')
+                values = line.split(",")
+                tuple = ""
+                
+                for index in range(len(values)):
+                    if index == 0:
+                        tuple += "('" + values[index] + "'"
+                    elif index == len(values) - 1:
+                        tuple += ", '" + values[index] + "'),"
+                    else:
+                        tuple += ",'" + values[index] + "'"
+                
+                command += tuple
+                line = f.readline()
+            
+            # Remove trailing comma and add semicolon
+            command = command[:-1]
+            command = command + ";"
+            starttime = time.time()
+            
+            # Execute the insert command with all tuples
+            try:
+                if tableName == "players":
+                    cur.execute(command)
+                elif tableName == "games":
+                    cur.execute(command)
+                elif tableName == "play":
+                    cur.execute(command)
+                else:
+                    cur.execute(command)
+            # If something goes wrong print a message
+            except Exception as e:
+                tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
+                success = False
+            f.close()   # Close input file
+        
+         # Print an error message if the input file cannot be opened
         except Exception as e:
             tk.messagebox.showinfo("Alert Message", "Something went wrong:\n" + str(e))
-            success = False
-    #else:
-     #   tk.messagebox.showinfo("Alert Message", "Please enter a valid file that contains a table name!")
-
-    f.close()
+    
+    # Close DB connection, record changes, and record end time
     cur.close()
     conn.commit()
     conn.close()
     endtime = time.time()
+    
+    # Display success message and disply elapsed time
     if success:
         print ('Insert data successful!')
-        result = "Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
+        result = "Multiple Row Insert into " + tableName + " successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)
 #----------------------------------end multiLineInsert----------------------------------------
 
@@ -261,15 +296,19 @@ def multiLineInsert():
 def getQuery():
     queryTextbox.delete('1.0','end')
     tableName = queryInput_text.get()
+    
+    # Check that the inputted table name exists in the database
     if (tableName.lower() != "players" and tableName.lower() != "games" and tableName.lower() != "teams" and  tableName.lower() != "play"):
         tk.messagebox.showinfo("Alert Message", "Please enter a valid table:\n players, games, teams, or play!")
     else:
-            
+         # Define and execute the query command
         query = "SELECT * FROM " + tableName + ";"
         (cur, conn) = connectToDB()
         cur.execute(query)
         rows = cur.fetchall()
         desc = cur.description      #this gets the attribute names
+        
+        # Display the results based on the table
         if (tableName.lower() == "players"):
             output = ("{0:>8} {1:>15} {2:>12} {3:>8} {4:>12} {5:>12} {6:>12} {7:>10}".format(desc[0][0], desc[1][0], desc[2][0],
             desc[3][0], desc[4][0], desc[5][0], desc[6][0], desc[7][0])) + "\n" #8 columns
@@ -320,10 +359,12 @@ def getAverage():
     averageQuery  = ''
     output        = ''
     
+    # Check that table is valid
     if (tableName.lower() != "players" and tableName.lower() != "games"):
         tk.messagebox.showinfo("Table Alert", "Please enter a valid table:\n players or games")
         
     else:
+        # Check that attribute is valid and define the query
         if(tableName.lower() == 'players'):
             #-----------------------------player attributes-------------------------------
             if (attributeName.lower() != 'touchdowns' and attributeName.lower() != 'totalyards' and attributeName.lower() != 'salary'):
@@ -336,17 +377,18 @@ def getAverage():
                 tk.messagebox.showinfo("Attribute Alert","Please enter a valid attribute from the Games table:\n attendance, ticketrevenue")
             else:
                 averageQuery = "SELECT avg(" + attributeName + ") as " + attributeName + " FROM " + tableName + ";"
-            
+        
+        # Connect to DB and execute the query
         (cur, conn) = connectToDB()
         starttime = time.time()
         cur.execute(averageQuery)
         rows = cur.fetchall()
         endtime = time.time()
         
+        # Display success message and results
         desc = cur.description
         result = "Average calculation successful!\n" "\nRun time: %.7f Second"%(endtime-starttime)
         tk.messagebox.showinfo(title='Result', message=result)
-        #output = "The average number of "
         output = ("{0:>0}".format(desc[0][0])) + " in the " + tableName + " table is:\n"
         for row in rows:
             output = output + str(row[0])
@@ -362,14 +404,15 @@ def getAverage():
 #checks for valid tables
 #constraints for PLAYERS, PLAYS, GAMES are delete on cascade from TEAM
 #Alert message is displayed upon successful implimentation
+
 #--------------------------------------------------------------------------------------------------------
-def deleteTable():
+def deleteTable():  
+    valid = True
     tablen = deleteInput_text.get()
-    if (tablen.lower() != "players" and tablen.lower() != "games" and tablen.lower() != "teams" and  tablen.lower() != "play"):
-        tk.messagebox.showinfo("Alert Message", "Please enter a valid table: players, games, teams, or play")
-    else:
+    # Check that table is valid
+    if (tablen.lower() == "players" or tablen.lower() == "games" or tablen.lower() == "teams" or tablen.lower() == "play"):
+        #Define and execute command
         query = "DELETE FROM " + tablen + ";"
-        #table = tableName
         (cur, conn) = connectToDB()
         cur.execute("SET SQL_SAFE_UPDATES = 0;")
         cur.execute(query)
@@ -377,7 +420,13 @@ def deleteTable():
         cur.close()
         conn.commit()
         conn.close()
-    tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
+        valid = True
+    else:
+        tk.messagebox.showinfo("Alert Message", "Please enter a valid table: players, games, teams, or play")
+        valid = False
+    # Display success message
+    if valid:
+        tk.messagebox.showinfo("Alert Message", "Table deleted successfully!")
 #------------------------------end deleteTable-----------------------------------
 
 
