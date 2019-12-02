@@ -135,7 +135,7 @@ def CreatePlay(size):
     for i in range(row):
         ID += 1
         gameID = str(ID).zfill(8)
-        playerIDs = sample(range(1,row), 53)
+        playerIDs = sample(range(1,1000), 53)
         #playerIDs = playerIDs.split(",")
         #print (playerIDs)
         for i in range(53):
